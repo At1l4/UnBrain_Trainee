@@ -1,13 +1,12 @@
 # Projeto Trainee UnBall 2024 Simulado
 
+Serão alterados somente os códigos de estratégia
 
+O código da comunicação com o Firasim e Referee podem ser encontrados em src/client
 
+O loop principal pode ser encontrado em src/loop.py
 
-Sistema principal da UnBall para o simulado 5v5 VSSS
-
-Desenvolvido em Python3
-
-Precisa ser executado com o docker
+O código que atualiza a visão pode ser encontrado em src/vision
 
 ## Histórico de competições onde foi utilizado
 
