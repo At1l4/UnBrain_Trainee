@@ -56,6 +56,8 @@ class GoalKeeper(Entity):
                     self.robot.direction *= -1
 
     def fieldDecider(self):
+        #Define os vetores posicao e velocidade
+        #Do robo, bola e gol
         rr = np.array(self.robot.pos)
         vr = np.array(self.robot.v)
         # self.vravg = 0.995 * self.vravg + 0.005 * norml(vr)
@@ -67,8 +69,10 @@ class GoalKeeper(Entity):
          # Aplica o movimento
         self.robot.vref = 0.2
 
+        #Define Angulacao
         self.robot.setSpin(spinGoalKeeper(rb, rr, rg), timeOut = 0.13)
 
+        #Estado de defesa
         Pb = goalkeep(rb, vb, rr, rg)
 
         if self.state == "Stable":
@@ -78,6 +82,8 @@ class GoalKeeper(Entity):
                 if abs(angError(ref_th, rob_th)) > 45 * np.pi / 180:
                     print('unstable ANG')
                     self.robot.setSpin(1, timeOut = 0.13)"""
+            
+            #Caso se afaste muito do gol
             if np.abs(rr[0]-rg[0]) > 0.03: #or abs(angError(self.robot.th, ang(rr, rg))) > 40 * np.pi / 180:
                 print(np.abs(rr[0]-rg[0]) > 0.03)
                 print('unstable')
@@ -89,10 +95,12 @@ class GoalKeeper(Entity):
                         print('unstable ANG')
                         self.robot.setSpin(1, timeOut = 0.05)"""
         elif self.state == "Unstable":
+            #Se estiver fora da linha
             if rr[0] > 0:
                 print("Attacker Control acessado")
                 self.setAttackerControl()
                 self.state = "Far"
+            #Se nao estiver longe
             elif np.abs(rr[0]-rg[0]) < 0.015:
                 self.state = "Stable"
         else:
