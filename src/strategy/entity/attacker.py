@@ -68,11 +68,13 @@ class Attacker(Entity):
         return self.attackState == 1 or self.attackState == 2
 
     def directionDecider(self):
+        #Define a movimentacao
         if self.robot.field is not None:
             ref_th = self.robot.field.F(self.robot.pose)
             rob_th = self.robot.th
 
             if time.time()-self.lastChat > 0.5:
+                #Em caso de erro de direção, essa se inverte
                 if abs(angError(ref_th, rob_th)) > 120 * np.pi / 180:
                     self.robot.direction *= -1
                     self.lastChat = time.time()
@@ -114,6 +116,7 @@ class Attacker(Entity):
         # else:
         #     self.robot.setSpin(0)
 
+        #Verifica proximidade com a bola, para definir giro
         if norm(rr, rb) < 0.085 and np.abs(rb[1]) > rl[1] and np.any([norm(rr, x.pos) < 0.20 for x in enemies]):
             self.robot.setSpin(-np.sign(rr[1]), timeOut=1)
         else:
@@ -122,6 +125,7 @@ class Attacker(Entity):
         # Define estado do movimento
         # Ir até a bola
         if self.attackState == 0:
+            #Verifica alinhamento para atacar 
             if self.alignedToGoal(Pb[:2], rr, rg):
                 self.attackState = 1
                 #print("atacando")
