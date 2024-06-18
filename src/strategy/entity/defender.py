@@ -28,15 +28,18 @@ class Defender(Entity):
         clientProvider().removeEllipse(self.robot.id)
         
     def directionDecider(self):
+       #Segue a direção do UVF
        if self.robot.field is not None:
             ref_th = self.robot.field.F(self.robot.pose)
             rob_th = self.robot.th
             # print('Rob_th:', rob_th)
 
+            #Caso angulo muito defasado,inverte movimento
             if abs(angError(ref_th, rob_th)) > 120 * np.pi / 180:
                 self.robot.direction *= -1
 
     def fieldDecider(self):
+        #Posicoes e velocidades do robo, bola e gol
         rr = np.array(self.robot.pos)
         vr = np.array(self.robot.v)
         rb = np.array(self.world.ball.pos)
@@ -51,17 +54,24 @@ class Defender(Entity):
          # Aplica o movimento
         self.robot.vref = 0
 
+        #Caso o robo esteja mais perto do gol do que a bola
         if norm(rr, rg) < norm(rb, rg):
+            #Defende
             self.robot.setSpin(spinGoalKeeper(rb, rr, rg), timeOut = 0.13)
 
+        #Define campo de movimentacao, a partir das posicoes do robo e bola
         if np.sign(rb[1]) > 0 and rb[1] > rr[1] and rb[0] < -0.60 and rr[1] > 0.25 and np.abs(rr[0]-rb[0]) < 0.07:
             pose = (rr[0], rb[1], np.pi/2)
             self.robot.field = GoalKeeperField(pose, rb[0])
             self.robot.vref = 999
+
+        #Movimentacao oposta a depender da posicao no campo
         elif np.sign(rb[1]) < 0 and rb[1] < rr[1] and rb[0] < -0.60 and rr[1] < -0.25 and np.abs(rr[0]-rb[0]) < 0.07:
             pose = (rr[0], rb[1], -np.pi/2)
             self.robot.field = GoalKeeperField(pose, rb[0])
             self.robot.vref = 999
+
+        #Elipse de defesa
         else:
             pose, spin = blockBallElipse(rb, vb, rr, self.world.field.areaEllipseCenter, *self.world.field.areaEllipseSize)
             self.robot.setSpin(spin)
