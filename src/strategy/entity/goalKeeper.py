@@ -12,6 +12,7 @@ import numpy as np
 import math
 import time
 
+
 class GoalKeeper(Entity):
     def __init__(self, world, robot, side=1):
         super().__init__(world, robot)
@@ -40,12 +41,8 @@ class GoalKeeper(Entity):
        if self.robot.field is not None:
             ref_th = self.robot.field.F(self.robot.pose)
             rob_th = self.robot.th
-            # print('Rob_th:', rob_th)
-
-            # if norm(self.robot.pos, self.world.ball.pos) < 0.03:
-            #     self.robot.setSpin(np.sign(self.robot.y - self.world.ball.y), timeOut=0.1)
-
-            if abs(angError(ref_th, rob_th)) > 90 * np.pi / 180: #and time.time()-self.lastChat > .3:
+            
+            if abs(angError(ref_th, rob_th)) > 90 * np.pi / 180: 
                 self.robot.direction *= -1
                 self.lastChat = time.time()
             
@@ -55,12 +52,61 @@ class GoalKeeper(Entity):
                     self.lastChat = time.time()
                     self.robot.direction *= -1
 
-    def fieldDecider(self):
+    def maintainPosition(self): #Mantem o robo no gol
+        
+        dist_lim = 0.01
+
+        positive_correction = -1
+        negative_correction = 1
+
+        rr = np.array(self.robot.pos)
+        vr = np.array(self.robot.v)
+
+        rg = -np.array(self.world.field.goalPos)
+
+        dist_robot_goal = rr[0] - rg[0]
+
+        if abs(dist_robot_goal)> dist_lim :
+            if dist_robot_goal>0 :
+
+                self.robot.vref[0] += positive_correction
+
+                #alternativamente self.robot.direction *= -1
+
+            else:
+
+                self.robot.vref[0] += negative_correction
+
+                #alternativamente self.robot.direction *= -1
+
+    def trackBall(self):
+
+
+        rr = np.array(self.robot.pos)
+        vr = np.array(self.robot.v)
+
+        rb = np.array(self.world.ball.pos)
+        vb = np.array(self.world.ball.v)
+
+        dist_robot_goal = rr[1] - rb[1]
+
+
+
+        
+
+    def defendBall(self):
+
+
+
+
+
+
+   '''NAO UTILIZAR def fieldDecider(self):
         #Define os vetores posicao e velocidade
         #Do robo, bola e gol
         rr = np.array(self.robot.pos)
         vr = np.array(self.robot.v)
-        # self.vravg = 0.995 * self.vravg + 0.005 * norml(vr)
+
         rb = np.array(self.world.ball.pos)
         vb = np.array(self.world.ball.v)
         rg = -np.array(self.world.field.goalPos)
@@ -124,4 +170,4 @@ class GoalKeeper(Entity):
         elif self.state == "Far":
             #print("entrou no far")
             self.robot.field = UVF(Pb, radius=0.04)
-        #self.robot.field = DirectionalField(Pb[2], Pb=Pb)
+        #self.robot.field = DirectionalField(Pb[2], Pb=Pb) '''
