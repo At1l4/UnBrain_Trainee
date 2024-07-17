@@ -54,22 +54,22 @@ class GoalKeeper(Entity):
 
     def maintainPosition(self): #Mantem o robo no gol
         
-        dist_lim = 0.01
+        dist_lim = 0.01 #Minima distancia do gol
 
         positive_correction = -1
         negative_correction = 1
 
-        rr = np.array(self.robot.pos)
+        rr = np.array(self.robot.pos) #Posica e velocidade do robo
         vr = np.array(self.robot.v)
 
-        rg = -np.array(self.world.field.goalPos)
+        rg = np.array(self.world.field.goalPos) #Posicao do gol
 
         dist_robot_goal = rr[0] - rg[0]
 
-        if abs(dist_robot_goal)> dist_lim :
+        if abs(dist_robot_goal )> dist_lim : #Caso extrapole o limite
             if dist_robot_goal>0 :
 
-                self.robot.vref[0] += positive_correction
+                self.robot.vref[0] += positive_correction #Corrije
 
                 #alternativamente self.robot.direction *= -1
 
@@ -81,6 +81,9 @@ class GoalKeeper(Entity):
 
     def trackBall(self):
 
+        max_error = 0.01 #Maxima distancia desejada da bola
+        positive_correction = -1
+        negative_correction = 1
 
         rr = np.array(self.robot.pos)
         vr = np.array(self.robot.v)
@@ -88,13 +91,53 @@ class GoalKeeper(Entity):
         rb = np.array(self.world.ball.pos)
         vb = np.array(self.world.ball.v)
 
-        dist_robot_goal = rr[1] - rb[1]
+        rb += vb*1/30 #Posicao a cada frame (30fps)
 
+        dist_robot_ball = rr[1] - rb[1] 
 
+        if abs(dist_robot_ball) < max_error: 
 
+            if dist_robot_ball>0 :
+
+                self.robot.vref[1] += positive_correction
+
+                #alternativamente self.robot.direction *= -1
+
+            else:
+
+                self.robot.vref[1] += negative_correction
         
+                #alternativamente self.robot.direction *= -1
+
 
     def defendBall(self):
+
+        critical_distance = 0.01 #Maxima distancia da bola ao gol
+
+        rr = np.array(self.robot.pos)
+        vr = np.array(self.robot.v)
+
+        rb = np.array(self.world.ball.pos)
+        vb = np.array(self.world.ball.v)
+
+        rg = np.array(self.world.field.goalPos) #Posicao do gol
+
+        rb += vb*1/30 #Posicao a cada frame (30fps)
+
+        dist_goal_ball = rr - rg
+
+        if math.sqrt(dist_goal_ball[0]**2 + dist_goal_ball[1]**2) < critical_distance:
+
+            
+
+
+
+
+
+
+
+
+
 
 
 
