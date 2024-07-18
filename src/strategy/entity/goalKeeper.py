@@ -113,6 +113,7 @@ class GoalKeeper(Entity):
     def defendBall(self):
 
         critical_distance = 0.01 #Maxima distancia da bola ao gol
+        kick_distance = 0.001
 
         rr = np.array(self.robot.pos)
         vr = np.array(self.robot.v)
@@ -124,9 +125,28 @@ class GoalKeeper(Entity):
 
         rb += vb*1/30 #Posicao a cada frame (30fps)
 
-        dist_goal_ball = rr - rg
+        dist_goal_ball = rb - rg #Vetor posicao relativa entre a bola e o gol
+
+        dist_robot_ball = rr[1] - rb[1] 
+
+        theta = math.atan((rb[0]-rr[0]/(rb[1]-rr[1]))) #Angulo da reta que liga o robo à bola
 
         if math.sqrt(dist_goal_ball[0]**2 + dist_goal_ball[1]**2) < critical_distance:
+
+            self.robot.vref[0] *= math.sin(theta) #Conversao do vetor velocidade na direção de theta
+    
+            self.robot.vref[1] *= math.cos(theta)
+
+        if (abs(dist_robot_ball) < kick_distance):
+
+            self.robot.setSpin(1)
+
+        
+
+
+
+
+
 
             
 
@@ -144,7 +164,7 @@ class GoalKeeper(Entity):
 
 
 
-   '''NAO UTILIZAR def fieldDecider(self):
+'''NAO UTILIZAR def fieldDecider(self):
         #Define os vetores posicao e velocidade
         #Do robo, bola e gol
         rr = np.array(self.robot.pos)
