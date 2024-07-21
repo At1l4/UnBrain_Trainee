@@ -141,7 +141,25 @@ class GoalKeeper(Entity):
 
             self.robot.setSpin(1)
 
-        
+    def avoidPlayers(self):
+
+        avoidance_radius = 0.05
+        repulsion_strenght = 0.1
+
+        rr = np.array(self.robot.pos)
+        vr = np.array(self.robot.v)
+
+        for opponent in self.robot.enemies:
+
+            rp = np.array(opponent.pos)
+
+            if np.linalg.norm(rr-rp) < avoidance_radius:
+                
+
+
+
+
+            
 
 
 
